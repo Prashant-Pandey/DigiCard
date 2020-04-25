@@ -9,6 +9,7 @@ class FormFieldWidget extends StatelessWidget {
       this.keyBoardType,
       this.initialValue,
       this.labelColor,
+      this.enabled,
       this.onSaved})
       : super(key: key);
 
@@ -19,6 +20,7 @@ class FormFieldWidget extends StatelessWidget {
   final Color labelColor;
   final keyBoardType;
   final onSaved;
+  final bool enabled;
 
   String validateName(String value) {
     if (value.length < 3)
@@ -32,6 +34,7 @@ class FormFieldWidget extends StatelessWidget {
     return Container(
       margin: EdgeInsets.fromLTRB(0, 0, 0, 25.0),
       child: TextFormField(
+          enabled: this.enabled != null ? this.enabled : true,
           initialValue: this.initialValue != null ? this.initialValue : "",
           obscureText: this.isPassword,
           style: style,

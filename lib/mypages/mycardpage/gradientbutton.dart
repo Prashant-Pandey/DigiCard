@@ -18,6 +18,7 @@ class CustomGradientButton extends StatelessWidget {
     return Container(
       padding: EdgeInsets.fromLTRB(8, 5, 8, 5),
       margin: EdgeInsets.only(bottom: 8),
+      width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         gradient: LinearGradient(
@@ -30,11 +31,11 @@ class CustomGradientButton extends StatelessWidget {
         onPressed: onPressed,
         focusColor: Colors.blue, // button pressed
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.only(right: 8.0),
+              padding: const EdgeInsets.only(left: 16.0, right: 8.0),
               child: Icon(iconData),
             ), // icon
             Text(

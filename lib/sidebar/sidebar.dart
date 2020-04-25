@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:digi_card/authentication/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../bloc_navigation/navigation_bloc.dart';
 import 'package:digi_card/sidebar/menu_items.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +18,7 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin {
   AnimationController _animationController;
   final bool isSidebarOpened = true;
   final _animationDuration = const Duration(milliseconds: 400);
+  String name, email = "";
 
   StreamController<bool> isSidebarOpenedStreamController;
   Stream<bool> isSidebarOpenedStream;
@@ -28,6 +32,16 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin {
     isSidebarOpenedStreamController = PublishSubject<bool>();
     isSidebarOpenedStream = isSidebarOpenedStreamController.stream;
     isSidebarOpenedSink = isSidebarOpenedStreamController.sink;
+
+    SharedPreferences.getInstance().then((sharedPreference) {
+      String username = sharedPreference.getString('name');
+      String emailid = sharedPreference.getString('email');
+
+      setState(() {
+        email = emailid;
+        name = username;
+      });
+    });
   }
 
   @override
@@ -49,6 +63,15 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin {
       _animationController.forward();
       isSidebarOpenedSink.add(true);
     }
+  }
+
+  void _onLogOut() async {
+    _onPressed();
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.clear();
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => LoginPage()),
+        (Route<dynamic> route) => false);
   }
 
   @override
@@ -78,7 +101,7 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin {
                       ),
                       ListTile(
                         title: Text(
-                          "Akhil",
+                          name,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 30,
@@ -86,7 +109,7 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin {
                           ),
                         ),
                         subtitle: Text(
-                          "akhilkc9@gmail.com",
+                          email,
                           style: TextStyle(
                             color: Color(0xFF1BB5FD),
                             fontSize: 20,
@@ -123,17 +146,16 @@ class _SideBarState extends State<SideBar> with SingleTickerProviderStateMixin {
                                 new NavigationEvents.onlyEvent(
                                     EventType.MyCardClickedEvent));
                           }),
-                      MenuItem(
-                        title: "Add Card",
-                        icon: Icons.add_comment,
-                      ),
                       Divider(
                           height: 64,
                           thickness: 0.5,
                           color: Colors.white.withOpacity(0.3),
                           indent: 32,
                           endIndent: 32),
-                      MenuItem(title: "Log Out", icon: Icons.exit_to_app),
+                      MenuItem(
+                          title: "Log Out",
+                          icon: Icons.exit_to_app,
+                          onTap: _onLogOut),
                     ],
                   ),
                 ),

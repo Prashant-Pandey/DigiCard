@@ -1,18 +1,20 @@
 class AddressModel {
-  String street;
+  String addr1;
+  String addr2;
   String city;
   String state;
   String country;
-  String zipcode;
+  int zip;
 
   AddressModel(
-      {this.street, this.city, this.state, this.country, this.zipcode});
+      {this.addr1, this.addr2, this.city, this.state, this.country, this.zip});
 
   Map toJson() => {
-        'street': street,
+        'addr1': addr1,
+        'addr2': addr2,
         'city': city,
         'state': state,
         'country': country,
-        'phone': zipcode
+        'zip': zip
       };
 }

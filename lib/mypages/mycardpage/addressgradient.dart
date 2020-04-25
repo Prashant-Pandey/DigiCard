@@ -1,3 +1,4 @@
+import '../../models/cardmodel.dart';
 import 'package:flutter/material.dart';
 
 class AddressGradient extends StatelessWidget {
@@ -5,6 +6,10 @@ class AddressGradient extends StatelessWidget {
     fontSize: 20,
     fontWeight: FontWeight.w800,
   );
+
+  final CardModel valueToPass;
+
+  AddressGradient(this.valueToPass);
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +28,7 @@ class AddressGradient extends StatelessWidget {
         onPressed: () {},
         focusColor: Colors.blue, // button pressed
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Padding(
@@ -36,28 +41,35 @@ class AddressGradient extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    "212 Barton Creek Drive D",
+                    valueToPass.address.addr1,
                     style: style,
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    "Charlotte",
+                    valueToPass.address.addr2,
                     style: style,
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    "North Carolina",
+                    valueToPass.address.city,
                     style: style,
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    "28262",
+                    valueToPass.address.state,
+                    style: style,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    valueToPass.address.zip.toString(),
                     style: style,
                   ),
                 )

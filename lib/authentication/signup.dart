@@ -1,3 +1,7 @@
+import '../sidebar/sidebarlayout.dart';
+import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import './authbutton.dart';
 import '../common/formfield.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +16,7 @@ class Signup extends StatefulWidget {
 class _SignupState extends State<Signup> {
   var listOfFormField;
   var _fname, _lname, _email, _pwd, _cpwd;
+  SharedPreferences prefs;
 
   String _validateName(arg) {
     if (arg.isEmpty) return 'Field should not be empty';
@@ -69,11 +74,9 @@ class _SignupState extends State<Signup> {
     ];
   }
 
-  Future<String> _makeGetRequest() async {
+  Future<Response> _SignUp() async {
     String url = 'https://ssdi-team-mobility.appspot.com/auth/register';
-    Map<String, String> headers = {
-      "Content-Type": "application/x-www-form-urlencoded"
-    };
+    Map<String, String> headers = {"Content-Type": "application/json"};
     Map<String, String> json = {
       "email": _email,
       "password": _pwd,
@@ -84,8 +87,45 @@ class _SignupState extends State<Signup> {
     var response = await http.post(Uri.encodeFull(url),
         headers: headers, body: jsonEncode(json));
 
-    print(response.body);
-    return response.body;
+    return response;
+  }
+
+  void onSignUpPress(BuildContext context) {
+    if (_formKey.currentState.validate()) {
+      _formKey.currentState.save();
+      if (_pwd != _cpwd) {
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text("Same Passwords should be given"),
+        ));
+        return;
+      }
+      Future<Response> future = _SignUp();
+      future.then((response) async {
+        Map jsonMap = jsonDecode(response.body);
+        if (response.statusCode == 401) {
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Invalid credentials"),
+          ));
+          return;
+        }
+
+        if (response.statusCode == 201) {
+          prefs = await SharedPreferences.getInstance();
+          prefs.setString('usertoken', jsonMap['token']);
+          prefs.setString('_id', jsonMap['user']['_id']);
+          prefs.setString('name', "${jsonMap['user']['first_name']}");
+          prefs.setString('email', jsonMap['user']['email']);
+
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => SideBarLayout()),
+              (Route<dynamic> route) => false);
+          return;
+        }
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text("Sign Up Error"),
+        ));
+      });
+    }
   }
 
   final _formKey = GlobalKey<FormState>();
@@ -96,48 +136,40 @@ class _SignupState extends State<Signup> {
         resizeToAvoidBottomPadding: false,
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: Text('Login Page'),
+          title: Text('Sign Up Page'),
           centerTitle: true,
           backgroundColor: Colors.red[600],
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
+        body: Builder(
+          builder: (context) => Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Container(
-                child: Padding(
-                  padding: const EdgeInsets.all(36.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        ...listOfFormField.map((item) {
-                          return FormFieldWidget(
-                            hintText: item['text'],
-                            isPassword: item['isObscure'],
-                            validator: item['validator'],
-                            keyBoardType: item['keyboardType'],
-                            onSaved: item['onSaved'],
-                          );
-                        }).toList(),
-                        SizedBox(height: 10.0),
-                        AuthButton(
-                            logintype: "Sign Up",
-                            onButtonPress: () {
-                              if (_formKey.currentState.validate()) {
-                                print('success');
-                                _formKey.currentState.save();
-                                _makeGetRequest();
-                              }
-                            }),
-                        SizedBox(height: 25.0),
-                        AuthButton(
-                            logintype: "Go Back",
-                            onButtonPress: () => Navigator.pop(context)),
-                      ],
-                    ),
+              Padding(
+                padding: const EdgeInsets.all(36.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      ...listOfFormField.map((item) {
+                        return FormFieldWidget(
+                          hintText: item['text'],
+                          isPassword: item['isObscure'],
+                          validator: item['validator'],
+                          keyBoardType: item['keyboardType'],
+                          onSaved: item['onSaved'],
+                        );
+                      }).toList(),
+                      SizedBox(height: 10.0),
+                      AuthButton(
+                          logintype: "Sign Up",
+                          onButtonPress: () => onSignUpPress(context)),
+                      SizedBox(height: 25.0),
+                      AuthButton(
+                          logintype: "Go Back",
+                          onButtonPress: () => Navigator.pop(context)),
+                    ],
                   ),
                 ),
               ),

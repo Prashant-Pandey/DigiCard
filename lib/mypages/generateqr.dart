@@ -1,3 +1,5 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../common/roundiconbutton.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -11,7 +13,6 @@ import 'dart:io';
 import 'package:flutter/rendering.dart';
 import 'package:share/share.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share/share.dart';
 //import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter_share_file/flutter_share_file.dart';
 
@@ -33,23 +34,12 @@ class GenerateQR extends StatelessWidget with NavigationStates {
       Uint8List pngBytes = byteData.buffer.asUint8List();
       print(pngBytes);
 
-      // await Share.file('esys image', 'esys.png', pngBytes, 'image/png',
-      //     text: 'My optional text.');
-
       final tempDir = await getTemporaryDirectory();
       print('Found File path: ${tempDir.path}');
       final file = await new File('${tempDir.path}/image.png').create();
       file.writeAsBytes(pngBytes).then((onValue) {
         FlutterShareFile.shareImage(tempDir.path, "image.png");
-        // Share.image(
-        //     path: tempDir.path,
-        //     mimeType: ShareType.TYPE_IMAGE,
-        //     title: "QR",
-        //     text: "Generated QR");
       });
-
-      // final channel = const MethodChannel('channel:me.alfian.share/share');
-      // channel.invokeMethod('shareFile', 'image.png');
     } catch (e) {
       print(e.toString());
     }
@@ -80,7 +70,18 @@ class GenerateQR extends StatelessWidget with NavigationStates {
               onPressed: _captureAndSharePng,
               colorStart: Colors.lightGreen,
               colorEnd: Colors.yellow,
-            )
+            ),
+            SizedBox(height: 25.0),
+            RoundIConButton(
+              icondata: Icons.arrow_back,
+              onPressed: () {
+                BlocProvider.of<NavigationBloc>(context).add(
+                    new NavigationEvents.onlyEvent(
+                        EventType.MyCardClickedEvent));
+              },
+              colorStart: Colors.lightGreen,
+              colorEnd: Colors.yellow,
+            ),
           ],
         ),
       ),

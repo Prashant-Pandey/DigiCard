@@ -19,7 +19,7 @@ class NavigationEvents {
 
   NavigationEvents.onlyEvent(EventType eventType) {
     _eventType = eventType;
-    valueToPass = "";
+    valueToPass = null;
   }
 }
 
@@ -39,7 +39,7 @@ class NavigationBloc extends Bloc<NavigationEvents, NavigationStates> {
         yield MyCard();
         break;
       case EventType.AddOrEditCardEvent:
-        yield AddOrEditCard();
+        yield AddOrEditCard(event.valueToPass);
         break;
       case EventType.GenerateQREvent:
         yield GenerateQR.valueString(event.valueToPass);

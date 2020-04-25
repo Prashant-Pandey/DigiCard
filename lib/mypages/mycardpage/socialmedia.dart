@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SocialMedia extends StatelessWidget {
+  final valueToPass;
+
+  SocialMedia(this.valueToPass);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -22,17 +27,47 @@ class SocialMedia extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            FaIcon(
-              FontAwesomeIcons.linkedin,
-              color: Colors.white70,
+            GestureDetector(
+              onTap: () async {
+                if (await canLaunch(valueToPass.socials.linkedin))
+                  await launch(valueToPass.socials.linkedin);
+                else
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text("Couldnt open the link"),
+                  ));
+              },
+              child: FaIcon(
+                FontAwesomeIcons.linkedin,
+                color: Colors.white70,
+              ),
             ),
-            FaIcon(
-              FontAwesomeIcons.facebookSquare,
-              color: Colors.white70,
+            GestureDetector(
+              onTap: () async {
+                if (await canLaunch(valueToPass.socials.facebook))
+                  await launch(valueToPass.socials.facebook);
+                else
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text("Couldnt open the link"),
+                  ));
+              },
+              child: FaIcon(
+                FontAwesomeIcons.facebookSquare,
+                color: Colors.white70,
+              ),
             ),
-            FaIcon(
-              FontAwesomeIcons.github,
-              color: Colors.white70,
+            GestureDetector(
+              onTap: () async {
+                if (await canLaunch(valueToPass.socials.github))
+                  await launch(valueToPass.socials.github);
+                else
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text("Couldnt open the link"),
+                  ));
+              },
+              child: FaIcon(
+                FontAwesomeIcons.github,
+                color: Colors.white70,
+              ),
             ),
           ],
         ),
